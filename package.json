@@ -5,21 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js",
-    "e2e": "playwright test",
-    "docs": "jsdoc -c jsdoc.json -d docs",
-    "swagger": "node swagger.js"
+    "start": "node index.js",
+    "e2e": "npx playwright test --ui",
+    "e2e:run": "npx playwright test"
   },
-  "author": "TeoAsseline",
-  "license": "ISC",
   "dependencies": {
     "express": "^5.1.0",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.53.1",
     "jest": "^30.0.3",
     "jsdoc": "^4.0.4",
-    "playwright": "^1.53.1"
+    "playwright": "^1.53.1",
+    "supertest": "^7.1.1"
   }
 }

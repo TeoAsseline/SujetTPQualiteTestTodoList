@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do App JS</title>
+  <meta name="description" content="Application de gestion de tâches simple en JavaScript." />
+  <link rel="icon" href="/IMAGES/tache.ico" />
+  <link rel="stylesheet" href="/CSS/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Ma To-Do List</h1>
+
+    <form id="task-form" aria-label="Ajouter une tâche">
+      <label for="task-title" class="visually-hidden">Nouvelle tâche</label>
+      <input type="text" id="task-title" placeholder="Ajouter une nouvelle tâche..." required autocomplete="off" />
+      <button type="submit" aria-label="Ajouter la tâche">+</button>
+    </form>
+
+    <ul id="task-list" aria-live="polite"></ul>
+  </div>
+
+  <noscript>
+    <p>Veuillez activer JavaScript pour utiliser cette application.</p>
+  </noscript>
+  <script src="/JS/script.js"></script>
+</body>
+</html>

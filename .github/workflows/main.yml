@@ -1,40 +1,95 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
     branches:
       - main
+      - master
   pull_request:
-    branches:
-      - main
 
 jobs:
-  build-and-test:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      node-modules-cache: ${{ steps.cache-node-modules.outputs.cache-hit }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-    - name: Run Unit Tests
-      run: npm test
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Install Playwright browsers
-      run: npx playwright install --with-deps
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run ESLint
+        run: npx eslint . --max-warnings=0
 
-    - name: Start API
-      run: npm start
+  test-backend:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Jest tests
+        run: npm test
 
-    - name: Run E2E Tests
-      run: npm run e2e
+  test-e2e:
+    needs: setup
+    runs-on: ubuntu-latest
+    services:
+      # Démarrer le serveur API en background pour les tests Playwright
+      api:
+        image: node:18
+        ports:
+          - 3000:3000
+        options: >-
+          --health-cmd "curl --fail http://localhost:3000 || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          NODE_ENV: test
+        # Commande pour lancer ton serveur (adapte si besoin)
+        command: bash -c "npm install && npm run start"
 
-    - name: Generate JSDoc Documentation
-      run: npm run docs
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
