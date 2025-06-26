@@ -7,7 +7,13 @@ module.exports = defineConfig({
   retries: 0,
   use: {
     baseURL: 'http://localhost:3000', // adapte si besoin
-    headless: true,
+    headless: true, 
     viewport: { width: 1280, height: 720 },
+  },
+  webServer: {
+    command: 'npm start',
+    url: 'http://localhost:3000',
+    timeout: 30000,
+    reuseExistingServer: !process.env.CI, // en local, réutilise un serveur déjà lancé
   },
 });
