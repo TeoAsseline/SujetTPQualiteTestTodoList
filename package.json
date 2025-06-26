@@ -4,7 +4,11 @@
   "description": "project for testing the Todo List API with Swagger documentation",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "node server.js",
+    "e2e": "playwright test",
+    "docs": "jsdoc -c jsdoc.json -d docs",
+    "swagger": "node swagger.js"
   },
   "author": "TeoAsseline",
   "license": "ISC",
