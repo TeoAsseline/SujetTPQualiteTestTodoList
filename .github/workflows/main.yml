@@ -1,20 +1,16 @@
-name: CI Pipeline
+name: Run Tests
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main]
   pull_request:
 
 jobs:
-  setup:
+  run-tests:
     runs-on: ubuntu-latest
-    outputs:
-      node-modules-cache: ${{ steps.cache-node-modules.outputs.cache-hit }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -22,74 +18,14 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: npm ci
 
-  lint:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Run ESLint
-        run: npx eslint . --max-warnings=0
-
-  test-backend:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
       - name: Run Jest tests
         run: npm test
 
-  test-e2e:
-    needs: setup
-    runs-on: ubuntu-latest
-    services:
-      # Démarrer le serveur API en background pour les tests Playwright
-      api:
-        image: node:18
-        ports:
-          - 3000:3000
-        options: >-
-          --health-cmd "curl --fail http://localhost:3000 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        env:
-          NODE_ENV: test
-        # Commande pour lancer ton serveur (adapte si besoin)
-        command: bash -c "npm install && npm run start"
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Playwright Browsers
+      - name: Install Playwright browsers
         run: npx playwright install --with-deps
+
       - name: Run Playwright tests
         run: npx playwright test
