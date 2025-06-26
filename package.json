@@ -1,0 +1,21 @@
+{
+  "name": "sujettpqualitetesttodolist",
+  "version": "1.0.0",
+  "description": "project for testing the Todo List API with Swagger documentation",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "TeoAsseline",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.3",
+    "jsdoc": "^4.0.4",
+    "playwright": "^1.53.1"
+  }
+}
